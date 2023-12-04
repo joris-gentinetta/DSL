@@ -18,7 +18,6 @@ print(f"Finished imports in {time.time() - start} seconds")
 
 def segment(folder_path, RESCALE=False):
     data_dir = Path(folder_path)
-    img_path = data_dir / "raw.tif"
     normalized_path = data_dir / "normalized.npy"
     stardist_path = data_dir / "stardist_labels.npy"
     wssd_path = data_dir / "wssd_labels.npy"
@@ -43,7 +42,7 @@ def segment(folder_path, RESCALE=False):
     )
     np.save(stardist_path, stardist_labels)
     
-    wssd_labels = np.zeros(imgs.shape, dtype=np.uint16)
+    wssd_labels = np.zeros(normalized.shape, dtype=np.uint16)
     # ws_labels = create_zarr(imgs.shape, np.uint16, ws_path, chunks = chunks)
     print("Starting watershed...")
     array_apply(

@@ -19,7 +19,6 @@ print(f"Finished imports in {time.time() - start} seconds")
 
 def segment(folder_path, RESCALE=False):
     data_dir = Path(folder_path)
-    img_path = data_dir / "raw.tif"
     normalized_path = data_dir / "normalized.npy"
     cellpose_path = data_dir / "cellpose_labels.npy"
     wscp_path = data_dir / "wscp_labels.npy"

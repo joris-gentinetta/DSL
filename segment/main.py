@@ -19,7 +19,7 @@ from ultrack.utils import labels_to_edges
 from skimage.transform import rescale
 print(f"Finished imports in {time.time() - start} seconds")
 
-RESCALE = True
+RESCALE = False
 
 def segment(data_dir, input_file, n_frames, override=False):
     img_path = input_file
@@ -100,7 +100,7 @@ def segment(data_dir, input_file, n_frames, override=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif" , required=False, help='Path to the image file')
-    parser.add_argument('--n_frames', type=int, default=2, required=False, help='Number of frames (optional)')
+    parser.add_argument('--n_frames', type=int, default=-1, required=False, help='Number of frames (optional)')
     parser.add_argument('--override', default=True, required=False, action='store_true', help='Override existing files')
     args = parser.parse_args()
 

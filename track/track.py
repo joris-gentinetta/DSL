@@ -10,21 +10,40 @@ from ultrack.utils import estimate_parameters_from_labels, labels_to_edges
 from ultrack.config import MainConfig
 import pandas as pd
 from time import time
+import argparse
+import dask.array as da
+import zarr
 
-if __name__ == "__main__":
+def tracking(output_dir, n_frames=-1, override=False):
     start_time = time()
+    data_dir = Path(output_dir)
+    normalized_path = data_dir / "normalized.npy"
+    cellpose_path = data_dir / "cellpose_labels.npy"
+    wscp_path = data_dir / "wscp_labels.npy"
+    stardist_path = data_dir / "stardist_labels.npy"
+    wssd_path = data_dir / "wssd_labels.npy"
+    detection_path = data_dir / "detections.npz"
 
-    # data_dir = "/cluster/scratch/jorisg/input"
-    data_dir = join(Path(__file__).parent.parent, "input")
+    cellpose_labels = da.from_array(np.load(cellpose_path))
+    wscp_labels = da.from_array(np.load(wscp_path))
 
-    os.environ["OMP_NUM_THREADS"] = "40"
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    stardist_labels = da.from_array(np.load(stardist_path))
+    wssd_labels = da.from_array(np.load(wssd_path))
 
-    stardist_labels = np.load(join(data_dir, 'stardist_labels.npy'))
-    detection, edges = labels_to_edges(stardist_labels,
-                                       sigma=4.0)  # multiple labels can be used with [labels_0, labels_1, ...]
-    np.save(join(data_dir, 'detection.npy'), detection)
-    np.save(join(data_dir, 'edges.npy'), edges)
+    if not detection_path.exists() or override:
+        detection, edges = labels_to_edges(
+            [stardist_labels[..., c] for c in range(stardist_labels.shape[-1])] +\
+            [cellpose_labels[..., c] for c in range(cellpose_labels.shape[-1])],
+            # [wscp_labels[..., c] for c in range(wscp_labels.shape[-1])] +\
+            # [wssd_labels[..., c] for c in range(wssd_labels.shape[-1])],
+            sigma=1.0,
+            detection_store_or_path=zarr.TempStore(),
+            edges_store_or_path=zarr.TempStore(),
+        )
+        np.savez_compressed(detection_path, detection=detection, edges=edges)
+    else:
+        detection, edges = np.load(detection_path)
+
     config = MainConfig()
     pprint(config)
 
@@ -60,8 +79,22 @@ if __name__ == "__main__":
     pd.to_pickle(tracks_df, join(data_dir, 'tracks.pkl'))
     with open(join(data_dir, 'graph.pkl'), 'wb') as f:
         pickle.dump(graph, f)
-    np.save(join(data_dir, 'labels.npy'), labels)
+    np.save(join(data_dir, 'track_labels.npy'), labels)
 
     end_time = time()
     print(f"Total time: {(end_time - start_time)/60} minutes")
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif" , required=False, help='Path to the image file')
+    parser.add_argument('--n_frames', type=int, default=-1, required=False, help='Number of frames (optional)')
+    parser.add_argument('--override', default=True, required=False, action='store_true', help='Override existing files')
+    args = parser.parse_args()
+
+    os.environ["OMP_NUM_THREADS"] = "40"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+    # create the folder to store the results:
+    experiment = Path(args.file).stem
+    output_dir = join(Path(__file__).parent.parent, "output", experiment)
+    tracking(output_dir, args.n_frames, args.override)

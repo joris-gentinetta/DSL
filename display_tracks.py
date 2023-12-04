@@ -55,7 +55,7 @@ viewer.add_image(edges, blending="additive", colormap="magma")
 tracks_df = pd.read_pickle(join(data_dir, 'tracks.pkl'))
 with open(join(data_dir, 'graph.pkl'), 'rb') as f:
     graph = pickle.load(f)
-labels = np.load(join(data_dir, 'labels.npy'))
+labels = np.load(join(data_dir, 'track_labels.npy'))
 viewer.add_tracks(tracks_df[["track_id", "t", "y", "x"]].values, graph=graph)
 viewer.add_labels(labels)
 
