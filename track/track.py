@@ -14,8 +14,8 @@ from time import time
 if __name__ == "__main__":
     start_time = time()
 
-    # data_dir = "/cluster/scratch/jorisg/data"
-    data_dir = join(Path(__file__).parent.parent, "data")
+    # data_dir = "/cluster/scratch/jorisg/input"
+    data_dir = join(Path(__file__).parent.parent, "input")
 
     os.environ["OMP_NUM_THREADS"] = "40"
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"

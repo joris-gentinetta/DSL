@@ -73,7 +73,7 @@ def display_folder(folder_path, n_frames = None):
         imgs = imgs[:n_frames]
     imgs = np.swapaxes(imgs, 1, 3)
 
-    chunks = (1, imgs.shape[1], imgs.shape[2], 1) # chunk size used to compress data
+    chunks = (1, imgs.shape[1], imgs.shape[2], 1) # chunk size used to compress input
 
     viewer = initialize_viewer(imgs)
 

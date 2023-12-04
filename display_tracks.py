@@ -13,12 +13,12 @@ import matplotlib.pyplot as plt
 from tifffile import imread
 
 #rsync to local using os:
-data_dir = join(Path(__file__).parent.parent, "data")
-# os.system('rsync -avz --progress jorisg@euler.ethz.ch:/cluster/scratch/jorisg/data/ data/')
-os.system(f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/ultrack/examples/data/ {data_dir}/')
+data_dir = join(Path(__file__).parent.parent, "input")
+# os.system('rsync -avz --progress jorisg@euler.ethz.ch:/cluster/scratch/jorisg/input/ input/')
+os.system(f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/ultrack/examples/input/ {data_dir}/')
 
-# (T, Y, X, C) data, where T=time, Y, X =s patial coordinates and C=channels
-data_dir = join(Path(__file__).parent.parent, "data")
+# (T, Y, X, C) input, where T=time, Y, X =s patial coordinates and C=channels
+data_dir = join(Path(__file__).parent.parent, "input")
 
 img_path = Path(join(data_dir, "test.tif"))
 
@@ -30,7 +30,7 @@ plt.show()
 imgs = imread(img_path)
 imgs = imgs[:, 1:, :, :]
 
-# chunks = (1, *imgs.shape[1:-1], 1) # chunk size used to compress data
+# chunks = (1, *imgs.shape[1:-1], 1) # chunk size used to compress input
 
 if n_frames is not None:
     imgs = imgs[:n_frames]

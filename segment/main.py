@@ -1,4 +1,5 @@
 import os
+from os.path import join
 import time
 
 os.environ["OMP_NUM_THREADS"] = "10"
@@ -20,9 +21,9 @@ print(f"Finished imports in {time.time() - start} seconds")
 
 RESCALE = True
 
-def segment(folder_path, n_frames, override=False):
-    data_dir = Path(folder_path)
-    img_path = data_dir / "raw.tif"
+def segment(data_dir, input_file, n_frames, override=False):
+    img_path = input_file
+    data_dir = Path(data_dir)
     normalized_path = data_dir / "normalized.npy"
     cellpose_path = data_dir / "cellpose_labels.npy"
     wscp_path = data_dir / "wscp_labels.npy"
@@ -49,7 +50,7 @@ def segment(folder_path, n_frames, override=False):
         downscaled = np.zeros((imgs.shape[0], int(rescale_factor * imgs.shape[1]), int(rescale_factor * imgs.shape[2]), imgs.shape[3]))
         for i in range(imgs.shape[0]):
             downscaled[i, ...] = rescale(imgs[i, ...], rescale_factor, channel_axis=2, anti_aliasing=True, preserve_range = True)
-        chunks = (1, downscaled.shape[1], downscaled.shape[2], 1) # chunk size used to compress data
+        chunks = (1, downscaled.shape[1], downscaled.shape[2], 1) # chunk size used to compress input
         imgs = da.from_array(downscaled, chunks=chunks)
     else:
         chunks = (1, imgs.shape[1], imgs.shape[2], 1)
@@ -57,18 +58,18 @@ def segment(folder_path, n_frames, override=False):
 
     if not normalized_path.exists() or override:
         import preprocess
-        preprocess.preprocess(folder_path, imgs, RESCALE=RESCALE)
+        preprocess.preprocess(data_dir, imgs, RESCALE=RESCALE)
     
     if not cellpose_path.exists() or override:
         import cellpose_segment
-        cellpose_segment.segment(folder_path, RESCALE=RESCALE)
-    
+        cellpose_segment.segment(data_dir, RESCALE=RESCALE)
+
     cellpose_labels = da.from_array(np.load(cellpose_path))
     # wscp_labels = da.from_array(np.load(wscp_path))
 
     if not stardist_path.exists() or override:
         import stardist_segment
-        stardist_segment.segment(folder_path, RESCALE=RESCALE)
+        stardist_segment.segment(data_dir, RESCALE=RESCALE)
     
     stardist_labels = da.from_array(np.load(stardist_path))
     # wssd_labels = da.from_array(np.load(wssd_path))
@@ -85,12 +86,12 @@ def segment(folder_path, n_frames, override=False):
 
     if detection.shape != original_scale:
         rescale_factor = original_scale[1] / detection.shape[1]
-        detection_upscale = rescale(detection, rescale_factor, channel_axis=0, anti_aliasing=False, preserve_range = True)
+        detection_upscale = rescale(detection, rescale_factor, channel_axis=0, anti_aliasing=False, preserve_range=True)
         detection = detection_upscale
     
     if contours.shape != original_scale:
         rescale_factor = original_scale[1] / contours.shape[1]
-        contours_upscale = rescale(contours, rescale_factor, channel_axis=0, anti_aliasing=False, preserve_range = True)
+        contours_upscale = rescale(contours, rescale_factor, channel_axis=0, anti_aliasing=False, preserve_range=True)
         contours = contours_upscale
     
     np.savez_compressed(detection_path, detection=detection, edges=contours)
@@ -98,9 +99,16 @@ def segment(folder_path, n_frames, override=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('folder_path', type=str, help='Path to the image file')
-    parser.add_argument('--n_frames', type=int, default=None, help='Number of frames (optional)')
-    parser.add_argument('--override', action='store_true', help='Override existing files')
+    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif" , required=False, help='Path to the image file')
+    parser.add_argument('--n_frames', type=int, default=2, required=False, help='Number of frames (optional)')
+    parser.add_argument('--override', default=True, required=False, action='store_true', help='Override existing files')
     args = parser.parse_args()
 
-    segment(args.folder_path, args.n_frames, args.override)
+    # create the folder to store the results:
+    experiment = Path(args.file).stem
+    output_dir = join(Path(__file__).parent.parent, "output", experiment)
+    os.makedirs(output_dir, exist_ok=True)
+
+    input_file = join(Path(__file__).parent.parent, "input", args.file)
+
+    segment(output_dir, input_file, args.n_frames, args.override)

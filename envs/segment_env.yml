@@ -1,4 +1,4 @@
-name: ultrack-segment
+name: segment
 channels:
   - conda-forge
   - rapidsai
@@ -7,17 +7,17 @@ channels:
 dependencies:
   - python=3.10
   - rapidsai::cucim
-  - conda-forge::cudatoolkit=11.2
-  - conda-forge::cudnn=8.4.1
-  - conda-forge::tensorflow-gpu=2.11.0
-  - conda-forge::cupy
+#  - conda-forge::cudatoolkit=11.2
+#  - conda-forge::cudnn=8.4.1
+#  - conda-forge::tensorflow-gpu=2.11.0
+#  - conda-forge::cupy
+  - tensorflow
   - coin-or-cbc
   - gurobi
   - jupyter
   - pytorch
   - pip
   - zarr
-  - cupy
   - seaborn
   - pip:
     - cellpose
