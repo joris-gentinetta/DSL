@@ -13,7 +13,7 @@ import numpy as np
 from ultrack.utils.array import array_apply
 from stardist.models import StarDist2D, Config2D
 
-from utils import predict_stardist
+from utils import predict_stardist, watershed_segm
 print(f"Finished imports in {time.time() - start} seconds")
 
 def segment(folder_path, RESCALE=False):
@@ -43,15 +43,16 @@ def segment(folder_path, RESCALE=False):
     )
     np.save(stardist_path, stardist_labels)
     
-    # wssd_labels = np.zeros(imgs.shape, dtype=np.uint16)
-    # # ws_labels = create_zarr(imgs.shape, np.uint16, ws_path, chunks = chunks)
-    # print("Starting watershed...")
-    # array_apply(
-    #     normalized,
-    #     stardist_labels,
-    #     out_array=wssd_labels,
-    #     func=watershed_segm,
-    #     min_area=20,
-    #     axis=(0, 3),
-    # )
-    # np.save(wssd_path, wssd_labels)
+    wssd_labels = np.zeros(imgs.shape, dtype=np.uint16)
+    # ws_labels = create_zarr(imgs.shape, np.uint16, ws_path, chunks = chunks)
+    print("Starting watershed...")
+    array_apply(
+        normalized,
+        stardist_labels,
+        out_array=wssd_labels,
+        func=watershed_segm,
+        min_area=20,
+        axis=(0, 3),
+    )
+    np.save(wssd_path, wssd_labels)
+

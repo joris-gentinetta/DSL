@@ -45,15 +45,15 @@ def segment(folder_path, RESCALE=False):
     )
     np.save(cellpose_path, cellpose_labels)
     
-    # wscp_labels = np.zeros(normalized.shape, dtype=np.uint16)
-    # # ws_labels = create_zarr(imgs.shape, np.uint16, ws_path, chunks = chunks)
-    # print("Starting watershed...")
-    # array_apply(
-    #     normalized,
-    #     cellpose_labels,
-    #     out_array=wscp_labels,
-    #     func=watershed_segm,
-    #     min_area=20,
-    #     axis=(0, 3),
-    # )
-    # np.save(wscp_path, wscp_labels)
+    wscp_labels = np.zeros(normalized.shape, dtype=np.uint16)
+    # ws_labels = create_zarr(imgs.shape, np.uint16, ws_path, chunks = chunks)
+    print("Starting watershed...")
+    array_apply(
+        normalized,
+        cellpose_labels,
+        out_array=wscp_labels,
+        func=watershed_segm,
+        min_area=20,
+        axis=(0, 3),
+    )
+    np.save(wscp_path, wscp_labels)
