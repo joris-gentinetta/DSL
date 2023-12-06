@@ -8,7 +8,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 print("Starting main imports...")
 start = time.time()
 import argparse
-from tifffile import imread
+from tifffile import imread, imwrite
 from pathlib import Path
 import dask.array as da
 import zarr
