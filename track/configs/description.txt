@@ -1,0 +1,30 @@
+100 frames:
+    All channels:
+        1: stardist, wssd, cellpose, wscp
+        2: stardist, cellpose
+        3: stardist, wssd
+        4: cellpose, wscp
+
+    Channel 0:
+        11: stardist, wssd, cellpose, wscp
+        12: stardist, cellpose
+        13: stardist, wssd
+        14: cellpose, wscp
+
+    Channel 1:
+        21: stardist, wssd, cellpose, wscp
+        22: stardist, cellpose
+        23: stardist, wssd
+        24: cellpose, wscp
+
+    Channel 2:
+        31: stardist, wssd, cellpose, wscp
+        32: stardist, cellpose
+        33: stardist, wssd
+        34: cellpose, wscp
+
+    Channel 3:
+        41: stardist, wssd, cellpose, wscp
+        42: stardist, cellpose
+        43: stardist, wssd
+        44: cellpose, wscp

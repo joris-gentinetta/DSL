@@ -58,17 +58,17 @@ def add_tracks(viewer, tracks_file_path, track_label_file_path, graph_file_path)
     return track_name, track_label_name
 
 
-def display_folder(folder_path, img_path, n_frames=None):
+def display_folder(folder_path, img_path, config_id, n_frames=None):
     data_dir = Path(folder_path)
     normalized_path = data_dir / "normalized.npy"
     cellpose_path = data_dir / "cellpose_labels.npy"
     wscp_path = data_dir / "wscp_labels.npy"
     stardist_path = data_dir / "stardist_labels.npy"
     wssd_path = data_dir / "wssd_labels.npy"
-    detection_path = data_dir / "detections.npz"
-    tracks_path = data_dir / "tracks.pkl"
-    track_label_path = data_dir / "track_labels.npy"
-    graph_path = data_dir / "graph.pkl"
+    detection_path = data_dir / config_id / "detections.npz"
+    tracks_path = data_dir / config_id / "tracks.pkl"
+    track_label_path = data_dir / config_id / "track_labels.npy"
+    graph_path = data_dir / config_id / "graph.pkl"
 
     imgs = imread(img_path)
 
@@ -157,6 +157,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Display images and optional overlays.')
     parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif",
                         help='Path to the image file')
+    parser.add_argument('--config_id', type=str, default="1" , required=False, help='Name of config file')
+
     parser.add_argument('--n_frames', type=int, default=2, help='Number of frames (optional)')
     args = parser.parse_args()
 
@@ -168,5 +170,5 @@ if __name__ == "__main__":
 
     input_file = join(Path(__file__).parent, "input", args.file)
 
-    display_folder(output_dir, input_file, args.n_frames)
+    display_folder(output_dir, input_file, str(args.cofig_id), args.n_frames)
 
