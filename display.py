@@ -93,7 +93,9 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
                                            anti_aliasing=True, preserve_range=True)
             normalized = da.from_array(upscaled, chunks=chunks)
 
-        viewer.add_image(normalized, rgb=False, channel_axis=3, name="normalized")
+        layers = viewer.add_image(normalized, rgb=False, channel_axis=3, name="normalized")
+        for layer in layers:
+            layer.visible = False
 
     if cellpose_path.exists():
         cellpose_labels = da.from_array(np.load(cellpose_path), chunks=chunks)
@@ -105,7 +107,9 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
                                            anti_aliasing=False, preserve_range=True)
             cellpose_labels = da.from_array(upscaled, chunks=chunks)
         for i in range(cellpose_labels.shape[-1]):
-            viewer.add_labels(cellpose_labels[:, :, :, i], name=f"cellpose labels {i}")
+            layer = viewer.add_labels(cellpose_labels[:, :, :, i], name=f"cellpose labels {i}")
+            layer.visible = False
+
 
     if wscp_path.exists():
         wscp_labels = da.from_array(np.load(wscp_path), chunks=chunks)
@@ -117,7 +121,8 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
                                            anti_aliasing=False, preserve_range=True)
             wscp_labels = da.from_array(upscaled, chunks=chunks)
         for i in range(wscp_labels.shape[-1]):
-            viewer.add_labels(wscp_labels[:, :, :, i], name=f"watershed with cellpose labels {i}")
+            layer = viewer.add_labels(wscp_labels[:, :, :, i], name=f"watershed with cellpose labels {i}")
+            layer.visible = False
 
     if stardist_path.exists():
         stardist_labels = da.from_array(np.load(stardist_path), chunks=chunks)
@@ -129,7 +134,8 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
                                            anti_aliasing=False, preserve_range=True)
             stardist_labels = da.from_array(upscaled, chunks=chunks)
         for i in range(stardist_labels.shape[-1]):
-            viewer.add_labels(stardist_labels[:, :, :, i], name=f"stardist labels {i}")
+            layer = viewer.add_labels(stardist_labels[:, :, :, i], name=f"stardist labels {i}")
+            layer.visible = False
 
     if wssd_path.exists():
         wssd_labels = da.from_array(np.load(wssd_path), chunks=chunks)
@@ -141,7 +147,8 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
                                            anti_aliasing=False, preserve_range=True)
             wssd_labels = da.from_array(upscaled, chunks=chunks)
         for i in range(wssd_labels.shape[-1]):
-            viewer.add_labels(wssd_labels[:, :, :, i], name=f"watershed with stardist labels {i}")
+            layer = viewer.add_labels(wssd_labels[:, :, :, i], name=f"watershed with stardist labels {i}")
+            layer.visible = False
 
     if detection_path.exists():
         detection_name, edges_name = add_detection(viewer, detection_path)
@@ -155,11 +162,11 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Display images and optional overlays.')
-    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif",
+    parser.add_argument('--file', type=str, default="demo.tif",
                         help='Path to the image file')
-    parser.add_argument('--config_id', type=str, default="1" , required=False, help='Name of config file')
+    parser.add_argument('--config_id', type=str, default="1", required=False, help='Name of config file')
 
-    parser.add_argument('--n_frames', type=int, default=2, help='Number of frames (optional)')
+    parser.add_argument('--n_frames', type=int, default=100, help='Number of frames (optional)')
     args = parser.parse_args()
 
     experiment = Path(args.file).stem
@@ -170,5 +177,5 @@ if __name__ == "__main__":
 
     input_file = join(Path(__file__).parent, "input", args.file)
 
-    display_folder(output_dir, input_file, str(args.cofig_id), args.n_frames)
+    display_folder(output_dir, input_file, str(args.config_id), args.n_frames)
 
