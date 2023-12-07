@@ -45,4 +45,5 @@ def preprocess(folder_path, imgs, RESCALE=False):
         lower_q=0.55,
         axis=(0, 3),
     )
+
     np.save(normalized_path, normalized)

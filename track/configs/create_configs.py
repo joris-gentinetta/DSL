@@ -42,26 +42,36 @@ channel_assignments = {
     2: {'stardist': [0, 1, 2, 3], 'cellpose': [0, 1, 2, 3]},
     3: {'stardist': [0, 1, 2, 3], 'wssd': [0, 1, 2, 3]},
     4: {'cellpose': [0, 1, 2, 3], 'wscp': [0, 1, 2, 3]},
+    5: {'stardist': [0, 1, 2, 3]},
+    6: {'cellpose': [0, 1, 2, 3]},
     # Channel 0
     11: {'stardist': [0], 'wssd': [0], 'cellpose': [0], 'wscp': [0]},
     12: {'stardist': [0], 'cellpose': [0]},
     13: {'stardist': [0], 'wssd': [0]},
     14: {'cellpose': [0], 'wscp': [0]},
+    15: {'stardist': [0, 1, 2, 3]},
+    16: {'cellpose': [0, 1, 2, 3]},
     # Channel 1
     21: {'stardist': [1], 'wssd': [1], 'cellpose': [1], 'wscp': [1]},
     22: {'stardist': [1], 'cellpose': [1]},
     23: {'stardist': [1], 'wssd': [1]},
     24: {'cellpose': [1], 'wscp': [1]},
+    25: {'stardist': [0, 1, 2, 3]},
+    26: {'cellpose': [0, 1, 2, 3]},
     # Channel 2
     31: {'stardist': [2], 'wssd': [2], 'cellpose': [2], 'wscp': [2]},
     32: {'stardist': [2], 'cellpose': [2]},
     33: {'stardist': [2], 'wssd': [2]},
     34: {'cellpose': [2], 'wscp': [2]},
+    35: {'stardist': [0, 1, 2, 3]},
+    36: {'cellpose': [0, 1, 2, 3]},
     # Channel 3
     41: {'stardist': [3], 'wssd': [3], 'cellpose': [3], 'wscp': [3]},
     42: {'stardist': [3], 'cellpose': [3]},
     43: {'stardist': [3], 'wssd': [3]},
-    44: {'cellpose': [3], 'wscp': [3]}
+    44: {'cellpose': [3], 'wscp': [3]},
+    45: {'stardist': [0, 1, 2, 3]},
+    46: {'cellpose': [0, 1, 2, 3]}
 }
 
 # Function to save the JSON file
