@@ -160,69 +160,69 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
 
     if tracks_path.exists() and graph_path.exists():
         track_name, track_label_name = add_tracks(viewer, tracks_path, track_label_path, graph_path)
-    screenshot = viewer.screenshot()
-    viewer.close()
-    return screenshot
+    # screenshot = viewer.screenshot()
+    # viewer.close()
+    # return screenshot
 
-    # napari.run()
+    napari.run()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Display images and optional overlays.')
-    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif",
+    parser.add_argument('--file', type=str, default="demo.tif",
                         help='Path to the image file')
-    parser.add_argument('--config_id', type=str, default="4", required=False, help='Name of config file')
+    parser.add_argument('--config_id', type=str, default="1", required=False, help='Name of config file')
 
     parser.add_argument('--n_frames', type=int, default=100, help='Number of frames (optional)')
     args = parser.parse_args()
 
     experiment = Path(args.file).stem
     output_dir = join(Path(__file__).parent, "output", experiment)
-    print(f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ "{join(Path(__file__).parent, "output")}/"')
-    os.system(
-        f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ {join(Path(__file__).parent, "output")}/')
+    # print(f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ "{join(Path(__file__).parent, "output")}/"')
+    # os.system(
+    #     f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ {join(Path(__file__).parent, "output")}/')
 
     input_file = join(Path(__file__).parent, "input", args.file)
 
-    # display_folder(output_dir, input_file, str(args.config_id), args.n_frames)
+    display_folder(output_dir, input_file, str(args.config_id), args.n_frames)
 
-    # List of config IDs
-    config_ids = [1, 2, 3, 4, 11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44]
-    # config_ids = [1, 2, 3]
-
-    # Determine the number of rows and columns for the grid
-    n_rows = 6  # Adjust as needed
-    n_cols = len(config_ids) // n_rows + (len(config_ids) % n_rows > 0)
-
-    # Create a figure with specified dimensions
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(20, 20))  # Adjust figsize as needed
-
-    # Remove the space between plots
-    plt.subplots_adjust(wspace=0, hspace=0)
-
-    # Iterate over the grid and plot
-    for i, config_id in tqdm(enumerate(config_ids)):
-        row = i // n_cols
-        col = i % n_cols
-
-        args.config_id = str(config_id)
-
-        screenshot = display_folder(output_dir, input_file, str(args.config_id), args.n_frames)
-        axes[row, col].imshow(screenshot)
-        axes[row, col].set_title(str(config_id), fontsize=10)
-
-        # Remove axes
-        axes[row, col].axis('off')
-
-    # Hide any unused subplots
-    for i in range(len(config_ids), n_rows * n_cols):
-        row = i // n_cols
-        col = i % n_cols
-        axes[row, col].axis('off')
-
-    # Save the figure
-    # plt.show()
-    plt.savefig('combined_screenshots.png', dpi=300)  # Adjust the filename and dpi as needed
+    # # List of config IDs
+    # config_ids = [1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24, 25, 26, 31, 32, 33, 34, 35, 36, 41, 42, 43, 44, 45, 46, 51, 52, 53, 54, 55, 56]
+    # # config_ids = [1, 2, 3]
     #
-    # # Close the plot
-    # plt.close(fig)
+    # # Determine the number of rows and columns for the grid
+    # n_rows = 5  # Adjust as needed
+    # n_cols = len(config_ids) // n_rows + (len(config_ids) % n_rows > 0)
+    #
+    # # Create a figure with specified dimensions
+    # fig, axes = plt.subplots(n_rows, n_cols, figsize=(20, 20))  # Adjust figsize as needed
+    #
+    # # Remove the space between plots
+    # plt.subplots_adjust(wspace=0, hspace=0)
+    #
+    # # Iterate over the grid and plot
+    # for i, config_id in tqdm(enumerate(config_ids)):
+    #     row = i // n_cols
+    #     col = i % n_cols
+    #
+    #     args.config_id = str(config_id)
+    #
+    #     screenshot = display_folder(output_dir, input_file, str(args.config_id), args.n_frames)
+    #     axes[row, col].imshow(screenshot)
+    #     axes[row, col].set_title(str(config_id), fontsize=10)
+    #
+    #     # Remove axes
+    #     axes[row, col].axis('off')
+    #
+    # # Hide any unused subplots
+    # for i in range(len(config_ids), n_rows * n_cols):
+    #     row = i // n_cols
+    #     col = i % n_cols
+    #     axes[row, col].axis('off')
+    #
+    # # Save the figure
+    # # plt.show()
+    # plt.savefig('combined_screenshots.png', dpi=300)  # Adjust the filename and dpi as needed
+    # #
+    # # # Close the plot
+    # # plt.close(fig)
