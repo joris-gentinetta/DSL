@@ -27,3 +27,4 @@ dependencies:
     - pyift
     - git+https://github.com/royerlab/ultrack
     - pyqt5
+    - pyarrow
