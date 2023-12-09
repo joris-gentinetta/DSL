@@ -70,10 +70,11 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
     stardist_path = data_dir / "stardist_labels.npy"
     wssd_path = data_dir / "wssd_labels.npy"
     detection_path = data_dir / config_id / "detections.npz"
-    # tracks_path = data_dir / config_id / "tracks.pkl"
-    tracks_path = data_dir / config_id / "tracks_ppc.pkl"
+    tracks_path = data_dir / config_id / "tracks.pkl"
+    tracks_pcc_path = data_dir / config_id / "tracks_ppc.pkl"
     track_label_path = data_dir / config_id / "track_labels.npy"
     graph_path = data_dir / config_id / "graph.pkl"
+    graph_pcc_path = data_dir / config_id / "graph_ppc.pkl"
 
     imgs = imread(img_path)
 
@@ -161,6 +162,8 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
 
     if tracks_path.exists() and graph_path.exists():
         track_name, track_label_name = add_tracks(viewer, tracks_path, track_label_path, graph_path)
+    if tracks_pcc_path.exists() and graph_pcc_path.exists():
+        track_name, track_label_name = add_tracks(viewer, tracks_pcc_path, track_label_path, graph_pcc_path)
     # screenshot = viewer.screenshot()
     # viewer.close()
     # return screenshot

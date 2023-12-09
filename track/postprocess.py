@@ -24,7 +24,7 @@ import time
 import pandas as pd
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor
-
+from ultrack.tracks.graph import inv_tracks_df_forest
 
 
 def postprocess(folder_path, img_path, config_id, n_frames=None):
@@ -102,7 +102,7 @@ def postprocess(folder_path, img_path, config_id, n_frames=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Display images and optional overlays.')
-    parser.add_argument('--file', type=str, default="demo.tif",
+    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif",
                         help='Path to the image file')
     parser.add_argument('--config_id', type=str, default="1", required=False, help='Name of config file')
 
@@ -112,10 +112,6 @@ if __name__ == "__main__":
 
     experiment = Path(args.file).stem
     output_dir = join(Path(__file__).parent.parent, "output", experiment)
-    # print(f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ "{join(Path(__file__).parent, "output")}/"')
-    # os.system(
-    #     f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ {join(Path(__file__).parent, "output")}/')
-
     input_file = join(Path(__file__).parent.parent, "input", args.file)
 
 
@@ -149,6 +145,10 @@ if __name__ == "__main__":
                 tracks_df.loc[id, 'parent_id'] = -1
 
     tracks_df.to_pickle(join(output_dir, args.config_id, 'tracks_ppc.pkl'))
+
+    graph = inv_tracks_df_forest(tracks_df)
+    with open(join(output_dir, args.config_id, 'graph_ppc.pkl'), 'wb') as f:
+        pickle.dump(graph, f)
 
 
     # todo merge tracks where one branch of a split was removed
