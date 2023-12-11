@@ -71,8 +71,10 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
     wssd_path = data_dir / "wssd_labels.npy"
     detection_path = data_dir / config_id / "detections.npz"
     tracks_path = data_dir / config_id / "tracks.pkl"
+    tracks_pcc_path = data_dir / config_id / "tracks_ppc.pkl"
     track_label_path = data_dir / config_id / "track_labels.npy"
     graph_path = data_dir / config_id / "graph.pkl"
+    graph_pcc_path = data_dir / config_id / "graph_ppc.pkl"
 
     imgs = imread(img_path)
 
@@ -160,6 +162,8 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
 
     if tracks_path.exists() and graph_path.exists():
         track_name, track_label_name = add_tracks(viewer, tracks_path, track_label_path, graph_path)
+    if tracks_pcc_path.exists() and graph_pcc_path.exists():
+        track_name, track_label_name = add_tracks(viewer, tracks_pcc_path, track_label_path, graph_pcc_path)
     # screenshot = viewer.screenshot()
     # viewer.close()
     # return screenshot
@@ -169,18 +173,19 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Display images and optional overlays.')
-    parser.add_argument('--file', type=str, default="demo.tif",
+    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif",
                         help='Path to the image file')
     parser.add_argument('--config_id', type=str, default="1", required=False, help='Name of config file')
 
     parser.add_argument('--n_frames', type=int, default=100, help='Number of frames (optional)')
     args = parser.parse_args()
+    args.file = 'demo.tif'
 
     experiment = Path(args.file).stem
     output_dir = join(Path(__file__).parent, "output", experiment)
-    # print(f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ "{join(Path(__file__).parent, "output")}/"')
-    # os.system(
-    #     f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ {join(Path(__file__).parent, "output")}/')
+    print(f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ "{join(Path(__file__).parent, "output")}/"')
+    os.system(
+        f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ {join(Path(__file__).parent, "output")}/')
 
     input_file = join(Path(__file__).parent, "input", args.file)
 
@@ -191,8 +196,9 @@ if __name__ == "__main__":
     # # config_ids = [1, 2, 3]
     #
     # # Determine the number of rows and columns for the grid
-    # n_rows = 5  # Adjust as needed
-    # n_cols = len(config_ids) // n_rows + (len(config_ids) % n_rows > 0)
+    #
+    # n_cols = 6
+    # n_rows = len(config_ids) // n_cols + (len(config_ids) % n_cols > 0)
     #
     # # Create a figure with specified dimensions
     # fig, axes = plt.subplots(n_rows, n_cols, figsize=(20, 20))  # Adjust figsize as needed
@@ -222,7 +228,7 @@ if __name__ == "__main__":
     #
     # # Save the figure
     # # plt.show()
-    # plt.savefig('combined_screenshots.png', dpi=300)  # Adjust the filename and dpi as needed
+    # plt.savefig('combined_screenshots.png', dpi=600)  # Adjust the filename and dpi as needed
     # #
     # # # Close the plot
     # # plt.close(fig)

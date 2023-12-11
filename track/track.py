@@ -82,7 +82,7 @@ def tracking(output_dir, config_id,  n_frames=-1, override=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--file', type=str, default="demo.tif" , required=False, help='Name of file')
+    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif" , required=False, help='Name of file')
     parser.add_argument('--config_id', type=str, default="1" , required=False, help='Name of config file')
 
     parser.add_argument('--n_frames', type=int, default=100, required=False, help='Number of frames (optional)')
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     experiment = Path(args.file).stem
     output_dir = join(Path(__file__).parent.parent, "output", experiment)
 
-    for config_id in [1]:
+    for config_id in [5, 6, 15, 16, 25, 26, 35, 36, 45, 46, 51, 52, 53, 54, 55, 56]:
         args.config_id = str(config_id)
         os.makedirs(join(output_dir, args.config_id), exist_ok=True)
         start_time = time()

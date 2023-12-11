@@ -17,9 +17,11 @@ import numpy as np
 
 from ultrack.utils import labels_to_edges
 from skimage.transform import rescale
+
 print(f"Finished imports in {time.time() - start} seconds")
 
 RESCALE = False
+
 
 def segment(data_dir, input_file, n_frames, override=False):
     img_path = input_file
@@ -47,10 +49,12 @@ def segment(data_dir, input_file, n_frames, override=False):
     if RESCALE:
         ## Downscale images
         rescale_factor = 0.5
-        downscaled = np.zeros((imgs.shape[0], int(rescale_factor * imgs.shape[1]), int(rescale_factor * imgs.shape[2]), imgs.shape[3]))
+        downscaled = np.zeros(
+            (imgs.shape[0], int(rescale_factor * imgs.shape[1]), int(rescale_factor * imgs.shape[2]), imgs.shape[3]))
         for i in range(imgs.shape[0]):
-            downscaled[i, ...] = rescale(imgs[i, ...], rescale_factor, channel_axis=2, anti_aliasing=True, preserve_range = True)
-        chunks = (1, downscaled.shape[1], downscaled.shape[2], 1) # chunk size used to compress input
+            downscaled[i, ...] = rescale(imgs[i, ...], rescale_factor, channel_axis=2, anti_aliasing=True,
+                                         preserve_range=True)
+        chunks = (1, downscaled.shape[1], downscaled.shape[2], 1)  # chunk size used to compress input
         imgs = da.from_array(downscaled, chunks=chunks)
     else:
         chunks = (1, imgs.shape[1], imgs.shape[2], 1)
@@ -58,19 +62,25 @@ def segment(data_dir, input_file, n_frames, override=False):
 
     if not normalized_path.exists() or override:
         import preprocess
+        preprocess_start = time.time()
         preprocess.preprocess(data_dir, imgs, RESCALE=RESCALE)
-    
+        print(f'Preprocess: {(time.time() - preprocess_start) / 60} minutes')
+
     if not cellpose_path.exists() or override:
         import cellpose_segment
+        cellpose_start = time.time()
         cellpose_segment.segment(data_dir, RESCALE=RESCALE)
+        print(f'Cellpose: {(time.time() - cellpose_start) / 60} minutes')
 
     # cellpose_labels = da.from_array(np.load(cellpose_path))
     # wscp_labels = da.from_array(np.load(wscp_path))
 
     if not stardist_path.exists() or override:
         import stardist_segment
+        stardist_start = time.time()
         stardist_segment.segment(data_dir, RESCALE=RESCALE)
-    
+        print(f'Stardist: {(time.time() - stardist_start) / 60} minutes')
+
     # stardist_labels = da.from_array(np.load(stardist_path))
     # wssd_labels = da.from_array(np.load(wssd_path))
     #
@@ -99,7 +109,7 @@ def segment(data_dir, input_file, n_frames, override=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--file', type=str, default="demo.tif" , required=False, help='Path to the image file')
+    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif", required=False, help='Path to the image file')
     parser.add_argument('--n_frames', type=int, default=100, required=False, help='Number of frames (optional)')
     parser.add_argument('--override', default=True, required=False, action='store_true', help='Override existing files')
     args = parser.parse_args()

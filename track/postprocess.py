@@ -20,10 +20,14 @@ from tifffile import imread
 import matplotlib.pyplot as plt
 from PIL import Image
 import os
+import time
+import pandas as pd
+import numpy as np
+from concurrent.futures import ThreadPoolExecutor
+from ultrack.tracks.graph import inv_tracks_df_forest
 
 
-
-def preprocess(folder_path, img_path, config_id, n_frames=None):
+def postprocess(folder_path, img_path, config_id, n_frames=None):
     data_dir = Path(folder_path)
     normalized_path = data_dir / "normalized.npy"
     cellpose_path = data_dir / "cellpose_labels.npy"
@@ -52,46 +56,99 @@ def preprocess(folder_path, img_path, config_id, n_frames=None):
     with open(graph_path, 'rb') as f:
         graph = pickle.load(f)
     labels = np.load(track_label_path)
-    track_label_name = Path(track_label_path).name
-    # for id in tqdm(tracks_df.index):
-    #     for channel in range(4):
-    #         mask = labels[tracks_df.loc[id, 't']] == tracks_df.loc[id, 'track_id']
-    #         tracks_df.loc[id, f"c_{channel}"] = normalized[tracks_df.loc[id, 't'], :, :, channel][mask].mean()
+
     print()
+    # tracks_df = tracks_df.iloc[:1000]
 
 
 
     # Function to apply to each row
     def compute_means(row):
-        t = row['t']
-        track_id = row['track_id']
-        mask = labels[t] == track_id
-        means = [normalized[t, :, :, channel][mask].mean() for channel in range(4)]
-        means = means + np.sum(means)
-        return pd.Series(means, index=[f'c_{channel}' for channel in range(4)] + ['c_sum'])
+        t = int(row['t'])
+        mask = labels[t] == row['track_id']
+        means = [float(normalized[t, :, :, channel][mask].mean()) for channel in range(3)]
+        sum = np.sum(means)
+        means = [mean/sum for mean in means]
+        return pd.Series(means, index=[f'c_{channel}' for channel in range(3)] )
 
     # Apply the function to each row
-    tracks_df[[f'c_{channel}' for channel in range(4)]] = tracks_df.apply(compute_means, axis=1)
+    time1 = time.time()
+    tracks_df.loc[:, [f'c_{channel}' for channel in range(3)]] = tracks_df.apply(compute_means, axis=1)
+    print(f"Single thread took {time.time() - time1} seconds")
+    print()
+    return tracks_df
 
+
+
+    # # Corrected function
+    # def compute_means(row):
+    #     t = int(row['t'])
+    #     mask = labels[t] == row['track_id']
+    #     means = [float(normalized[t, :, :, channel][mask].mean()) for channel in range(4)]
+    #     sum = np.sum(means)
+    #     means = [mean / sum for mean in means]
+    #     return pd.Series(means, index=[f'c_{channel}' for channel in range(4)])
+    #
+    # # Function to parallelize the computation
+    # def parallelize_computation(df, func):
+    #     with ThreadPoolExecutor() as executor:
+    #         results = list(executor.map(func, [row for _, row in df.iterrows()]))
+    #     return pd.DataFrame(results)
+
+    # # Apply the function in parallel
+    # time1 = time.time()
+    # tracks_df.loc[:, [f'c_{channel}' for channel in range(4)]] = parallelize_computation(tracks_df, compute_means)
+    # print(f"Parallel computation took {time.time() - time1} seconds")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Display images and optional overlays.')
-    parser.add_argument('--file', type=str, default="demo.tif",
+    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif",
                         help='Path to the image file')
     parser.add_argument('--config_id', type=str, default="1", required=False, help='Name of config file')
 
     parser.add_argument('--n_frames', type=int, default=100, help='Number of frames (optional)')
+    parser.add_argument('--beta', type=float, default=0.3, help='Max color composition difference')
     args = parser.parse_args()
 
     experiment = Path(args.file).stem
     output_dir = join(Path(__file__).parent.parent, "output", experiment)
-    # print(f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ "{join(Path(__file__).parent, "output")}/"')
-    # os.system(
-    #     f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ {join(Path(__file__).parent, "output")}/')
-
     input_file = join(Path(__file__).parent.parent, "input", args.file)
 
-    preprocess(output_dir, input_file, args.config_id, args.n_frames)
+
+    if not os.path.exists(join(output_dir, args.config_id, 'tracks_pp.parquet')):
+        tracks_df = postprocess(output_dir, input_file, args.config_id, args.n_frames)
+        tracks_df.to_parquet(join(output_dir, args.config_id, 'tracks_pp.parquet'))
+    else:
+        tracks_df = pd.read_parquet(join(output_dir, args.config_id, 'tracks_pp.parquet'))
+
+    for id in tqdm(tracks_df.index):
+        parent_id = tracks_df.loc[id, 'parent_id']
+        if not parent_id == -1:
+            cut_track = False
+            if tracks_df.loc[parent_id, 'c_0'] > tracks_df.loc[id, 'c_0'] + args.beta or \
+                    tracks_df.loc[parent_id, 'c_0'] < tracks_df.loc[id, 'c_0'] - args.beta:
+                cut_track = True
+            elif tracks_df.loc[parent_id, 'c_1'] > tracks_df.loc[id, 'c_1'] + args.beta or \
+                    tracks_df.loc[parent_id, 'c_1'] < tracks_df.loc[id, 'c_1'] - args.beta:
+                cut_track = True
+            elif tracks_df.loc[parent_id, 'c_2'] > tracks_df.loc[id, 'c_2'] + args.beta or \
+                    tracks_df.loc[parent_id, 'c_2'] < tracks_df.loc[id, 'c_2'] - args.beta:
+                cut_track = True
+            if cut_track:
+                track_id = tracks_df.loc[id, 'track_id']
+                parent_track_id = tracks_df.loc[parent_id, 'track_id']
+
+                rows_to_update = tracks_df.index >= id
+                rows_to_update &= tracks_df['track_id'] == track_id
+                tracks_df.loc[rows_to_update, 'parent_track_id'] = -1
+
+                tracks_df.loc[id, 'parent_id'] = -1
+
+    tracks_df.to_pickle(join(output_dir, args.config_id, 'tracks_ppc.pkl'))
+
+    graph = inv_tracks_df_forest(tracks_df)
+    with open(join(output_dir, args.config_id, 'graph_ppc.pkl'), 'wb') as f:
+        pickle.dump(graph, f)
 
 
-
+    # todo merge tracks where one branch of a split was removed

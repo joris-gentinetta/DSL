@@ -26,7 +26,7 @@ base_template = {
         "window_size": None,
         "overlap_size": 1,
         "solution_gap": 0.005,
-        "time_limit": 3600,
+        "time_limit": 1200,
         "method": 0,
         "n_threads": 40,
         "link_function": "power",
