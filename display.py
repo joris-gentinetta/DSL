@@ -55,7 +55,9 @@ def add_tracks(viewer, tracks_file_path, track_label_file_path, graph_file_path)
         graph = pickle.load(f)
     labels = np.load(track_label_file_path)
     track_label_name = Path(track_label_file_path).name
+    # layer = viewer.add_tracks(tracks_df[["track_id", "t", "y", "x"]].values, graph=graph, name=track_name)
     layer = viewer.add_tracks(tracks_df[["track_id", "t", "y", "x"]].values, graph=graph, name=track_name)
+
     layer.visible = False
     viewer.add_labels(labels, name=track_label_name)
 
@@ -71,10 +73,17 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
     wssd_path = data_dir / "wssd_labels.npy"
     detection_path = data_dir / config_id / "detections.npz"
     tracks_path = data_dir / config_id / "tracks.pkl"
-    tracks_pcc_path = data_dir / config_id / "tracks_ppc.pkl"
+
     track_label_path = data_dir / config_id / "track_labels.npy"
     graph_path = data_dir / config_id / "graph.pkl"
-    graph_pcc_path = data_dir / config_id / "graph_ppc.pkl"
+
+    tracks_ppc_path = data_dir / config_id / "tracks_ppc.pkl"
+    graph_ppc_path = data_dir / config_id / "graph_ppc.pkl"
+
+    tracks_ppc_pruned_path = data_dir / config_id / "tracks_ppc_pruned.pkl"
+    graph_ppc_pruned_path = data_dir / config_id / "graph_ppc_pruned.pkl"
+    track_label_ppc_pruned_path = data_dir / config_id / "track_labels_ppc_pruned.npy"
+
 
     imgs = imread(img_path)
 
@@ -162,8 +171,10 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
 
     if tracks_path.exists() and graph_path.exists():
         track_name, track_label_name = add_tracks(viewer, tracks_path, track_label_path, graph_path)
-    if tracks_pcc_path.exists() and graph_pcc_path.exists():
-        track_name, track_label_name = add_tracks(viewer, tracks_pcc_path, track_label_path, graph_pcc_path)
+    if tracks_ppc_path.exists() and graph_ppc_path.exists():
+        track_name, track_label_name = add_tracks(viewer, tracks_ppc_path, track_label_path, graph_ppc_path)
+    if tracks_ppc_pruned_path.exists() and graph_ppc_pruned_path.exists():
+        track_name, track_label_name = add_tracks(viewer, tracks_ppc_pruned_path, track_label_ppc_pruned_path, graph_ppc_pruned_path)
     # screenshot = viewer.screenshot()
     # viewer.close()
     # return screenshot
@@ -179,14 +190,13 @@ if __name__ == "__main__":
 
     parser.add_argument('--n_frames', type=int, default=100, help='Number of frames (optional)')
     args = parser.parse_args()
-    args.file = 'demo.tif'
+    # args.file = 'demo.tif'
 
     experiment = Path(args.file).stem
     output_dir = join(Path(__file__).parent, "output", experiment)
     print(f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ "{join(Path(__file__).parent, "output")}/"')
     os.system(
         f'rsync -avz --progress jorisg@192.168.1.203:/home/jorisg/projects/DSL/output/ {join(Path(__file__).parent, "output")}/')
-
     input_file = join(Path(__file__).parent, "input", args.file)
 
     display_folder(output_dir, input_file, str(args.config_id), args.n_frames)
