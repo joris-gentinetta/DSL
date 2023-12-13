@@ -97,77 +97,77 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
 
     viewer = initialize_viewer(imgs)
 
-    # if normalized_path.exists():
-    #     # image size is (t, y, x, c)
-    #     normalized = da.from_array(np.load(normalized_path), chunks=chunks)
-    #     if normalized.shape != imgs.shape:
-    #         rescale_factor = imgs.shape[1] / normalized.shape[1]
-    #         upscaled = np.zeros(imgs.shape, dtype=normalized.dtype)
-    #         for i in range(imgs.shape[0]):
-    #             upscaled[i, ...] = rescale(normalized[i, ...].compute(), rescale_factor, channel_axis=2,
-    #                                        anti_aliasing=True, preserve_range=True)
-    #         normalized = da.from_array(upscaled, chunks=chunks)
-    #
-    #     layers = viewer.add_image(normalized, rgb=False, channel_axis=3, name="normalized")
-    #     for layer in layers:
-    #         layer.visible = False
-    #
-    # if cellpose_path.exists():
-    #     cellpose_labels = da.from_array(np.load(cellpose_path), chunks=chunks)
-    #     if cellpose_labels.shape != imgs.shape:
-    #         rescale_factor = imgs.shape[1] / cellpose_labels.shape[1]
-    #         upscaled = np.zeros(imgs.shape, dtype=cellpose_labels.dtype)
-    #         for i in range(imgs.shape[0]):
-    #             upscaled[i, ...] = rescale(cellpose_labels[i, ...].compute(), rescale_factor, channel_axis=2,
-    #                                        anti_aliasing=False, preserve_range=True)
-    #         cellpose_labels = da.from_array(upscaled, chunks=chunks)
-    #     for i in range(cellpose_labels.shape[-1]):
-    #         layer = viewer.add_labels(cellpose_labels[:, :, :, i], name=f"cellpose labels {i}")
-    #         layer.visible = False
+    if normalized_path.exists():
+        # image size is (t, y, x, c)
+        normalized = da.from_array(np.load(normalized_path), chunks=chunks)
+        # if normalized.shape != imgs.shape:
+        #     rescale_factor = imgs.shape[1] / normalized.shape[1]
+        #     upscaled = np.zeros(imgs.shape, dtype=normalized.dtype)
+        #     for i in range(imgs.shape[0]):
+        #         upscaled[i, ...] = rescale(normalized[i, ...].compute(), rescale_factor, channel_axis=2,
+        #                                    anti_aliasing=True, preserve_range=True)
+        #     normalized = da.from_array(upscaled, chunks=chunks)
 
-    #
-    # if wscp_path.exists():
-    #     wscp_labels = da.from_array(np.load(wscp_path), chunks=chunks)
-    #     if wscp_labels.shape != imgs.shape:
-    #         rescale_factor = imgs.shape[1] / wscp_labels.shape[1]
-    #         upscaled = np.zeros(imgs.shape, dtype=wscp_labels.dtype)
-    #         for i in range(imgs.shape[0]):
-    #             upscaled[i, ...] = rescale(wscp_labels[i, ...].compute(), rescale_factor, channel_axis=2,
-    #                                        anti_aliasing=False, preserve_range=True)
-    #         wscp_labels = da.from_array(upscaled, chunks=chunks)
-    #     for i in range(wscp_labels.shape[-1]):
-    #         layer = viewer.add_labels(wscp_labels[:, :, :, i], name=f"watershed with cellpose labels {i}")
-    #         layer.visible = False
-    #
-    # if stardist_path.exists():
-    #     stardist_labels = da.from_array(np.load(stardist_path), chunks=chunks)
-    #     if stardist_labels.shape != imgs.shape:
-    #         rescale_factor = imgs.shape[1] / stardist_labels.shape[1]
-    #         upscaled = np.zeros(imgs.shape, dtype=stardist_labels.dtype)
-    #         for i in range(imgs.shape[0]):
-    #             upscaled[i, ...] = rescale(stardist_labels[i, ...].compute(), rescale_factor, channel_axis=2,
-    #                                        anti_aliasing=False, preserve_range=True)
-    #         stardist_labels = da.from_array(upscaled, chunks=chunks)
-    #     for i in range(stardist_labels.shape[-1]):
-    #         layer = viewer.add_labels(stardist_labels[:, :, :, i], name=f"stardist labels {i}")
-    #         layer.visible = False
-    #
-    # if wssd_path.exists():
-    #     wssd_labels = da.from_array(np.load(wssd_path), chunks=chunks)
-    #     if wssd_labels.shape != imgs.shape:
-    #         rescale_factor = imgs.shape[1] / wssd_labels.shape[1]
-    #         upscaled = np.zeros(imgs.shape, dtype=wssd_labels.dtype)
-    #         for i in range(imgs.shape[0]):
-    #             upscaled[i, ...] = rescale(wssd_labels[i, ...].compute(), rescale_factor, channel_axis=2,
-    #                                        anti_aliasing=False, preserve_range=True)
-    #         wssd_labels = da.from_array(upscaled, chunks=chunks)
-    #     for i in range(wssd_labels.shape[-1]):
-    #         layer = viewer.add_labels(wssd_labels[:, :, :, i], name=f"watershed with stardist labels {i}")
-    #         layer.visible = False
+        layers = viewer.add_image(normalized, rgb=False, channel_axis=3, name="normalized")
+        for layer in layers:
+            layer.visible = False
 
-    # if detection_path.exists():
-    #     detection_name, edges_name = add_detection(viewer, detection_path)
-    #     viewer.layers[edges_name].visible = False
+    if cellpose_path.exists():
+        cellpose_labels = da.from_array(np.load(cellpose_path), chunks=chunks)
+        # if cellpose_labels.shape != imgs.shape:
+        #     rescale_factor = imgs.shape[1] / cellpose_labels.shape[1]
+        #     upscaled = np.zeros(imgs.shape, dtype=cellpose_labels.dtype)
+        #     for i in range(imgs.shape[0]):
+        #         upscaled[i, ...] = rescale(cellpose_labels[i, ...].compute(), rescale_factor, channel_axis=2,
+        #                                    anti_aliasing=False, preserve_range=True)
+        #     cellpose_labels = da.from_array(upscaled, chunks=chunks)
+        for i in range(cellpose_labels.shape[-1]):
+            layer = viewer.add_labels(cellpose_labels[:, :, :, i], name=f"cellpose labels {i}")
+            layer.visible = False
+
+
+    if wscp_path.exists():
+        wscp_labels = da.from_array(np.load(wscp_path), chunks=chunks)
+        # if wscp_labels.shape != imgs.shape:
+        #     rescale_factor = imgs.shape[1] / wscp_labels.shape[1]
+        #     upscaled = np.zeros(imgs.shape, dtype=wscp_labels.dtype)
+        #     for i in range(imgs.shape[0]):
+        #         upscaled[i, ...] = rescale(wscp_labels[i, ...].compute(), rescale_factor, channel_axis=2,
+        #                                    anti_aliasing=False, preserve_range=True)
+        #     wscp_labels = da.from_array(upscaled, chunks=chunks)
+        for i in range(wscp_labels.shape[-1]):
+            layer = viewer.add_labels(wscp_labels[:, :, :, i], name=f"watershed with cellpose labels {i}")
+            layer.visible = False
+
+    if stardist_path.exists():
+        stardist_labels = da.from_array(np.load(stardist_path), chunks=chunks)
+        # if stardist_labels.shape != imgs.shape:
+        #     rescale_factor = imgs.shape[1] / stardist_labels.shape[1]
+        #     upscaled = np.zeros(imgs.shape, dtype=stardist_labels.dtype)
+        #     for i in range(imgs.shape[0]):
+        #         upscaled[i, ...] = rescale(stardist_labels[i, ...].compute(), rescale_factor, channel_axis=2,
+        #                                    anti_aliasing=False, preserve_range=True)
+        #     stardist_labels = da.from_array(upscaled, chunks=chunks)
+        for i in range(stardist_labels.shape[-1]):
+            layer = viewer.add_labels(stardist_labels[:, :, :, i], name=f"stardist labels {i}")
+            layer.visible = False
+
+    if wssd_path.exists():
+        wssd_labels = da.from_array(np.load(wssd_path), chunks=chunks)
+        # if wssd_labels.shape != imgs.shape:
+        #     rescale_factor = imgs.shape[1] / wssd_labels.shape[1]
+        #     upscaled = np.zeros(imgs.shape, dtype=wssd_labels.dtype)
+        #     for i in range(imgs.shape[0]):
+        #         upscaled[i, ...] = rescale(wssd_labels[i, ...].compute(), rescale_factor, channel_axis=2,
+        #                                    anti_aliasing=False, preserve_range=True)
+        #     wssd_labels = da.from_array(upscaled, chunks=chunks)
+        for i in range(wssd_labels.shape[-1]):
+            layer = viewer.add_labels(wssd_labels[:, :, :, i], name=f"watershed with stardist labels {i}")
+            layer.visible = False
+
+    if detection_path.exists():
+        detection_name, edges_name = add_detection(viewer, detection_path)
+        viewer.layers[edges_name].visible = False
 
     if tracks_path.exists() and graph_path.exists():
         track_name, track_label_name = add_tracks(viewer, tracks_path, track_label_path, graph_path)
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Display images and optional overlays.')
     parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif",
                         help='Path to the image file')
-    parser.add_argument('--config_id', type=str, default="1", required=False, help='Name of config file')
+    parser.add_argument('--config_id', type=str, default="100", required=False, help='Name of config file')
 
     parser.add_argument('--n_frames', type=int, default=100, help='Number of frames (optional)')
     args = parser.parse_args()
