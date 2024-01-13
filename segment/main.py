@@ -34,7 +34,7 @@ def segment(data_dir, input_file, n_frames, override=False, config_id=None):
         imgs = imgs[:n_frames]
     imgs = np.swapaxes(imgs, 1, 3)
 
-    with open(join(Path(__file__).parent, 'configs', f'{config_id}.json'), 'r') as f:
+    with open(join(Path(__file__).parent.parent, 'track', 'configs', f'{config_id}.json'), 'r') as f:
         config_data = json.load(f)
     segmentation_channels = config_data["segmentation_channels"]
 
