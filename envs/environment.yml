@@ -1,4 +1,4 @@
-name: segment
+name: DSL
 channels:
   - conda-forge
   - rapidsai
