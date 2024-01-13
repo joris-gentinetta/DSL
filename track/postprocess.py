@@ -2,8 +2,8 @@
 import os
 from os.path import join
 
-os.environ["OMP_NUM_THREADS"] = "10"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+# os.environ["OMP_NUM_THREADS"] = "10"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 from pathlib import Path
 import pickle
@@ -156,8 +156,11 @@ if __name__ == "__main__":
     output_dir = join(Path(__file__).parent.parent, "output", experiment)
     input_file = join(Path(__file__).parent.parent, "input", args.file)
 
+    tqdm.pandas()
+
 
     if not os.path.exists(join(output_dir, args.config_id, 'tracks_pp.parquet')):
+        print("Computing color composition")
         tracks_df = compute_color_composition(output_dir, input_file, args.config_id, args.n_frames)
         tracks_df.to_parquet(join(output_dir, args.config_id, 'tracks_pp.parquet'))
     else:
@@ -165,10 +168,12 @@ if __name__ == "__main__":
 
     labels = np.load(join(output_dir, args.config_id, 'track_labels.npy'))
     if not os.path.exists(join(output_dir, args.config_id, 'tracks_ppc.pkl')):
+        print("Filtering color composition")
         tracks_df, labels = filter_color_composition(tracks_df, labels, args.beta)
 
         tracks_df.to_pickle(join(output_dir, args.config_id, 'tracks_ppc.pkl'))
         np.save(join(output_dir, args.config_id, 'track_labels_ppc.npy'), labels)
+        print("Creating graph")
         graph = inv_tracks_df_forest(tracks_df)
         with open(join(output_dir, args.config_id, 'graph_ppc.pkl'), 'wb') as f:
             pickle.dump(graph, f)
@@ -176,7 +181,9 @@ if __name__ == "__main__":
         tracks_df = pd.read_pickle(join(output_dir, args.config_id, 'tracks_ppc.pkl'))
         labels = np.load(join(output_dir, args.config_id, 'track_labels_ppc.npy'))
     if args.min_length is not None:
+        print("Pruning short tracks")
         tracks_df, labels = prune_short_tracks(tracks_df, labels, args.min_length)
+    print("Creating graph")
     graph = inv_tracks_df_forest(tracks_df)
     tracks_df.to_pickle(join(output_dir, args.config_id, 'tracks_ppc_pruned.pkl'))
     np.save(join(output_dir, args.config_id, 'track_labels_ppc_pruned.npy'), labels)

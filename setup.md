@@ -53,5 +53,11 @@ run the tracking script:
 python track/track.py --file demo.tif --config_id high_quality
 ```
 
+run the postprocessing script:
+```
+python track/postprocess.py --file demo.tif --config_id very_fast
+```
+
+
 
 
