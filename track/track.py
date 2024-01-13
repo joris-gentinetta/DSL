@@ -30,7 +30,7 @@ def tracking(output_dir, config_id,  n_frames=-1, override=False):
     stardist_labels = da.from_array(np.load(stardist_path))[:n_frames]
     wssd_labels = da.from_array(np.load(wssd_path))[:n_frames]
 
-    with open(join('configs', f'{config_id}.json'), 'r') as f:
+    with open(join(Path(__file__).parent, 'configs', f'{config_id}.json'), 'r') as f:
         config_data = json.load(f)
     segmentation_channels = config_data["segmentation_channels"]
     if not detection_path.exists() or override:
