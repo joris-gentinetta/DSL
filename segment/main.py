@@ -5,17 +5,13 @@ import time
 # os.environ["OMP_NUM_THREADS"] = "10"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-print("Starting main imports...")
 start = time.time()
 import argparse
 from tifffile import imread
 from pathlib import Path
 import dask.array as da
 import numpy as np
-
 from skimage.transform import rescale
-
-print(f"Finished imports in {time.time() - start} seconds")
 
 RESCALE = False
 

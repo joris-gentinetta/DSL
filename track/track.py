@@ -82,23 +82,21 @@ def tracking(output_dir, config_id,  n_frames=-1, override=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--file', type=str, default="demo.tif" , required=False, help='Name of file')
-    parser.add_argument('--config_id', type=str, default="2" , required=False, help='Name of config file')
+    parser.add_argument('--config_id', type=str, default="high_quality", required=False, help='Name of config file')
 
     parser.add_argument('--n_frames', type=int, default=None, required=False, help='Number of frames (optional)')
     parser.add_argument('--override', default=True, required=False, action='store_true', help='Override existing files')
     args = parser.parse_args()
 
-    os.environ["OMP_NUM_THREADS"] = "40"
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    # os.environ["OMP_NUM_THREADS"] = "40"
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
     # create the folder to store the results:
     experiment = Path(args.file).stem
     output_dir = join(Path(__file__).parent.parent, "output", experiment)
 
-    for config_id in [100]:
-        args.config_id = str(config_id)
-        os.makedirs(join(output_dir, args.config_id), exist_ok=True)
-        start_time = time()
-        tracking(output_dir, args.config_id, args.n_frames, args.override)
-        end_time = time()
-        print(f"{config_id}: {(end_time - start_time) / 60} minutes")
+    os.makedirs(join(output_dir, args.config_id), exist_ok=True)
+    start_time = time()
+    tracking(output_dir, args.config_id, args.n_frames, args.override)
+    end_time = time()
+    print(f"{config_id}: {(end_time - start_time) / 60} minutes")

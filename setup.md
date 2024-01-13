@@ -25,5 +25,29 @@ source mamba.sh
 
 create the environment:
 ```
+source create_env.sh
+```
+
+create a "Named-User Academic" Gurobi License:
+```
+https://portal.gurobi.com/iam/licenses/request
+```
+
+set the Gurobi license
+```
+grbgetkey <your key>
+```
+
+go to the project folder
+```
+cd ..
+```
+
+run the segmentation script:
+```
+python segment/main.py --file demo.tif
+```
+
+
 
 
