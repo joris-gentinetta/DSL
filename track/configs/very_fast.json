@@ -34,16 +34,7 @@
     },
     "segmentation_channels": {
         "stardist": [
-            1
-        ],
-        "wssd": [
-            1
-        ],
-        "cellpose": [
-            1
-        ],
-        "wscp": [
-            1
+            -1
         ]
     }
 }

@@ -1,20 +1,13 @@
 import os
 import time
-
-os.environ["OMP_NUM_THREADS"] = "10"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
-print("Starting stardist imports...")
+# os.environ["OMP_NUM_THREADS"] = "10"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 start = time.time()
 from pathlib import Path
-
 import numpy as np
-
 from ultrack.utils.array import array_apply
 from stardist.models import StarDist2D, Config2D
-
 from utils import predict_stardist, watershed_segm
-print(f"Finished imports in {time.time() - start} seconds")
 
 def segment(folder_path, RESCALE=False):
     data_dir = Path(folder_path)

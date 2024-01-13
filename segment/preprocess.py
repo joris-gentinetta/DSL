@@ -1,20 +1,10 @@
 import time
-
-print("Starting preprocess imports...")
 start = time.time()
-import gc
 from pathlib import Path
-from tifffile import imread
-
 import numpy as np
-import dask.array as da
-
 from ultrack.imgproc import normalize
 from ultrack.utils.array import array_apply
-
 from utils import remove_background
-
-print(f"Finished imports in {time.time() - start} seconds")
 
 
 def preprocess(folder_path, imgs, RESCALE=False):

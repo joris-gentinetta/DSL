@@ -7,23 +7,14 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 from pathlib import Path
 import pickle
-import napari
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 import argparse
 import dask.array as da
 from tqdm import tqdm
-from skimage.transform import rescale
-
 from tifffile import imread
-import matplotlib.pyplot as plt
-from PIL import Image
 import os
 import time
 import pandas as pd
 import numpy as np
-from concurrent.futures import ThreadPoolExecutor
 from ultrack.tracks.graph import inv_tracks_df_forest
 
 
@@ -32,7 +23,6 @@ def compute_color_composition(folder_path, img_path, config_id, n_frames=None):
     normalized_path = data_dir / "normalized.npy"
     tracks_path = data_dir / config_id / "tracks.pkl"
     track_label_path = data_dir / config_id / "track_labels.npy"
-    graph_path = data_dir / config_id / "graph.pkl"
 
     imgs = imread(img_path)
     imgs = imgs[:, 1:, :, :]
@@ -62,27 +52,6 @@ def compute_color_composition(folder_path, img_path, config_id, n_frames=None):
     print(f"Single thread took {time.time() - time1} seconds")
     print()
     return tracks_df
-
-    # # multithreading (doesn't work)
-    # def compute_means(row):
-    #     t = int(row['t'])
-    #     mask = labels[t] == row['track_id']
-    #     means = [float(normalized[t, :, :, channel][mask].mean()) for channel in range(4)]
-    #     sum = np.sum(means)
-    #     means = [mean / sum for mean in means]
-    #     return pd.Series(means, index=[f'c_{channel}' for channel in range(4)])
-    #
-    # # Function to parallelize the computation
-    # def parallelize_computation(df, func):
-    #     with ThreadPoolExecutor() as executor:
-    #         results = list(executor.map(func, [row for _, row in df.iterrows()]))
-    #     return pd.DataFrame(results)
-
-    # # Apply the function in parallel
-    # time1 = time.time()
-    # tracks_df.loc[:, [f'c_{channel}' for channel in range(4)]] = parallelize_computation(tracks_df, compute_means)
-    # print(f"Parallel computation took {time.time() - time1} seconds")
-
 
 def filter_color_composition(tracks_df, labels, beta=0.3):
     new_track_id = tracks_df['track_id'].max() + 1
@@ -118,9 +87,7 @@ def filter_color_composition(tracks_df, labels, beta=0.3):
                     rows_to_update = tracks_df['parent_track_id'] == branch_track_id
                     tracks_df.loc[rows_to_update, 'parent_track_id'] = tracks_df.loc[parent_id, 'track_id']
 
-
                 tracks_df.loc[id, 'parent_id'] = -1
-
 
                 #set the track_ids of all rows in the track after the cut to a new track_id and set their parent_track_id to -1
                 rows_to_update = tracks_df['t'] >= t
@@ -144,7 +111,6 @@ def filter_color_composition(tracks_df, labels, beta=0.3):
                 tracks_df.loc[rows_to_update, 'parent_track_id'] = new_track_id
 
                 new_track_id += 1
-
 
     return tracks_df, labels
 
@@ -175,25 +141,16 @@ def prune_short_tracks(tracks_df, labels, min_length=20):
     return tracks_df, labels
 
 
-
-
-
-
-
-def filter_division_time(tracks_df, min_division_time=10):
-    return tracks_df
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Display images and optional overlays.')
-    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif",
+    parser.add_argument('--file', type=str, default="demo.tif",
                         help='Path to the image file')
-    parser.add_argument('--config_id', type=str, default="100", required=False, help='Name of config file')
+    parser.add_argument('--config_id', type=str, default="2", required=False, help='Name of config file')
 
-    parser.add_argument('--n_frames', type=int, default=100, help='Number of frames (optional)')
+    parser.add_argument('--n_frames', type=int, default=None, help='Number of frames (optional)')
     parser.add_argument('--beta', type=float, default=0.2, help='Max color composition difference')
-    # parser.add_argument('--min_division_time', type=int, default=10, help='Min division time')
+    parser.add_argument('--min_length', type=int, default=None, help='Min legth of track')
     args = parser.parse_args()
-    # args.file = 'demo.tif'
 
     experiment = Path(args.file).stem
     output_dir = join(Path(__file__).parent.parent, "output", experiment)
@@ -209,7 +166,6 @@ if __name__ == "__main__":
     labels = np.load(join(output_dir, args.config_id, 'track_labels.npy'))
     if not os.path.exists(join(output_dir, args.config_id, 'tracks_ppc.pkl')):
         tracks_df, labels = filter_color_composition(tracks_df, labels, args.beta)
-        # tracks_df = filter_division_time(tracks_df, args.min_division_time)
 
         tracks_df.to_pickle(join(output_dir, args.config_id, 'tracks_ppc.pkl'))
         np.save(join(output_dir, args.config_id, 'track_labels_ppc.npy'), labels)
@@ -219,8 +175,8 @@ if __name__ == "__main__":
     else:
         tracks_df = pd.read_pickle(join(output_dir, args.config_id, 'tracks_ppc.pkl'))
         labels = np.load(join(output_dir, args.config_id, 'track_labels_ppc.npy'))
-
-    tracks_df, labels = prune_short_tracks(tracks_df, labels, 50)
+    if args.min_length is not None:
+        tracks_df, labels = prune_short_tracks(tracks_df, labels, args.min_length)
     graph = inv_tracks_df_forest(tracks_df)
     tracks_df.to_pickle(join(output_dir, args.config_id, 'tracks_ppc_pruned.pkl'))
     np.save(join(output_dir, args.config_id, 'track_labels_ppc_pruned.npy'), labels)

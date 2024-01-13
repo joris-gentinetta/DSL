@@ -16,7 +16,6 @@ import json
 
 def tracking(output_dir, config_id,  n_frames=-1, override=False):
     data_dir = Path(output_dir)
-    normalized_path = data_dir / "normalized.npy"
     cellpose_path = data_dir / "cellpose_labels.npy"
     wscp_path = data_dir / "wscp_labels.npy"
     stardist_path = data_dir / "stardist_labels.npy"
@@ -82,10 +81,10 @@ def tracking(output_dir, config_id,  n_frames=-1, override=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--file', type=str, default="4T1 p27 trial period.HTD - Well D02 Field #3.tif" , required=False, help='Name of file')
-    parser.add_argument('--config_id', type=str, default="100" , required=False, help='Name of config file')
+    parser.add_argument('--file', type=str, default="demo.tif" , required=False, help='Name of file')
+    parser.add_argument('--config_id', type=str, default="2" , required=False, help='Name of config file')
 
-    parser.add_argument('--n_frames', type=int, default=100, required=False, help='Number of frames (optional)')
+    parser.add_argument('--n_frames', type=int, default=None, required=False, help='Number of frames (optional)')
     parser.add_argument('--override', default=True, required=False, action='store_true', help='Override existing files')
     args = parser.parse_args()
 

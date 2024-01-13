@@ -34,10 +34,10 @@
     },
     "segmentation_channels": {
         "stardist": [
-            2
-        ],
-        "wssd": [
-            2
+            0,
+            1,
+            2,
+            3
         ]
     }
 }

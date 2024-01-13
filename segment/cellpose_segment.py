@@ -1,8 +1,8 @@
 import os
 import time
 
-os.environ["OMP_NUM_THREADS"] = "10"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+# os.environ["OMP_NUM_THREADS"] = "10"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 print("Starting cellpose imports...")
 start = time.time()
