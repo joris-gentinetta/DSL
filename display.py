@@ -171,10 +171,10 @@ def display_folder(folder_path, img_path, config_id, n_frames=None):
 
     if tracks_path.exists() and graph_path.exists():
         track_name, track_label_name = add_tracks(viewer, tracks_path, track_label_path, graph_path)
-    if tracks_ppc_path.exists() and graph_ppc_path.exists():
-        track_name, track_label_name = add_tracks(viewer, tracks_ppc_path, track_label_path, graph_ppc_path)
-    if tracks_ppc_pruned_path.exists() and graph_ppc_pruned_path.exists():
-        track_name, track_label_name = add_tracks(viewer, tracks_ppc_pruned_path, track_label_ppc_pruned_path, graph_ppc_pruned_path)
+    # if tracks_ppc_path.exists() and graph_ppc_path.exists():
+    #     track_name, track_label_name = add_tracks(viewer, tracks_ppc_path, track_label_path, graph_ppc_path)
+    # if tracks_ppc_pruned_path.exists() and graph_ppc_pruned_path.exists():
+    #     track_name, track_label_name = add_tracks(viewer, tracks_ppc_pruned_path, track_label_ppc_pruned_path, graph_ppc_pruned_path)
     # screenshot = viewer.screenshot()
     # viewer.close()
     # return screenshot
@@ -238,7 +238,7 @@ if __name__ == "__main__":
     #
     # # Save the figure
     # # plt.show()
-    # plt.savefig('combined_screenshots.png', dpi=600)  # Adjust the filename and dpi as needed
+    # plt.savefig('combined_screenshots_report.png', dpi=1000)  # Adjust the filename and dpi as needed
     # #
-    # # # Close the plot
-    # # plt.close(fig)
+    # # Close the plot
+    # plt.close(fig)
