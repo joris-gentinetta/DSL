@@ -47,7 +47,7 @@ run the segmentation script:
 ```
 python segment/main.py --file demo.tif --config_id high_quality
 ```
-
+run
 
 
 

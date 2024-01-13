@@ -35,9 +35,6 @@
     "segmentation_channels": {
         "stardist": [
             -1
-        ],
-        "cellpose": [],
-        "wssd": [],
-        "wscp": []
+        ]
     }
 }

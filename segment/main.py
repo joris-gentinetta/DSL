@@ -36,7 +36,7 @@ def segment(data_dir, input_file, n_frames, override=False, config_id=None):
 
     with open(join(Path(__file__).parent.parent, 'track', 'configs', f'{config_id}.json'), 'r') as f:
         config_data = json.load(f)
-    segmentation_channels = [channel for channel in config_data["segmentation_channels"] if channel != []]
+    segmentation_channels = config_data["segmentation_channels"]
 
     if RESCALE:
         ## Downscale images
