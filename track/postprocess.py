@@ -48,10 +48,7 @@ def compute_color_composition(folder_path, img_path, config_id, n_frames=None):
         return pd.Series(means, index=[f'c_{channel}' for channel in range(3)] )
 
     # Apply the function to each row
-    time1 = time.time()
     tracks_df.loc[:, [f'c_{channel}' for channel in range(3)]] = tracks_df.progress_apply(compute_means, axis=1)
-    print(f"Single thread took {time.time() - time1} seconds")
-    print()
     return tracks_df
 
 def filter_color_composition(tracks_df, labels, beta=0.3):

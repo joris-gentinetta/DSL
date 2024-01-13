@@ -43,14 +43,20 @@ go to the project folder
 cd ..
 ```
 
+run everything together:
+```
+source run_everything.sh demo.tif very_fast
+```
+alternatively run all steps separately:
+
 run the segmentation script:
 ```
-python segment/main.py --file demo.tif --config_id high_quality
+python segment/main.py --file demo.tif --config_id very_fast
 ```
 
 run the tracking script:
 ```
-python track/track.py --file demo.tif --config_id high_quality
+python track/track.py --file demo.tif --config_id very_fast
 ```
 
 run the postprocessing script:
@@ -58,6 +64,12 @@ run the postprocessing script:
 python track/postprocess.py --file demo.tif --config_id very_fast
 ```
 
+display the results:
+```
+python display.py --file demo.tif --config_id very_fast
+```
+
+visualize the with visualizations.ipynb
 
 
 
