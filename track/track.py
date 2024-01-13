@@ -22,17 +22,20 @@ def tracking(output_dir, config_id,  n_frames=-1, override=False):
     wssd_path = data_dir / "wssd_labels.npy"
     detection_path = data_dir / config_id / "detections.npz"
 
-
-
-    cellpose_labels = da.from_array(np.load(cellpose_path))[:n_frames]
-    wscp_labels = da.from_array(np.load(wscp_path))[:n_frames]
-
-    stardist_labels = da.from_array(np.load(stardist_path))[:n_frames]
-    wssd_labels = da.from_array(np.load(wssd_path))[:n_frames]
-
     with open(join(Path(__file__).parent, 'configs', f'{config_id}.json'), 'r') as f:
         config_data = json.load(f)
     segmentation_channels = config_data["segmentation_channels"]
+
+    if 'cellpose' in segmentation_channels:
+        cellpose_labels = da.from_array(np.load(cellpose_path))[:n_frames]
+    if 'wscp' in segmentation_channels:
+        wscp_labels = da.from_array(np.load(wscp_path))[:n_frames]
+    if 'stardist' in segmentation_channels:
+        stardist_labels = da.from_array(np.load(stardist_path))[:n_frames]
+    if 'wssd' in segmentation_channels:
+        wssd_labels = da.from_array(np.load(wssd_path))[:n_frames]
+
+
     if not detection_path.exists() or override:
         detection, edges = labels_to_edges(
             [stardist_labels[..., c] for c in segmentation_channels['stardist']] +\
