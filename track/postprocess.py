@@ -17,6 +17,7 @@ import pandas as pd
 import numpy as np
 from ultrack.tracks.graph import inv_tracks_df_forest
 
+tqdm.pandas()
 
 def compute_color_composition(folder_path, img_path, config_id, n_frames=None):
     data_dir = Path(folder_path)
@@ -48,7 +49,7 @@ def compute_color_composition(folder_path, img_path, config_id, n_frames=None):
 
     # Apply the function to each row
     time1 = time.time()
-    tracks_df.loc[:, [f'c_{channel}' for channel in range(3)]] = tracks_df.apply(compute_means, axis=1)
+    tracks_df.loc[:, [f'c_{channel}' for channel in range(3)]] = tracks_df.progress_apply(compute_means, axis=1)
     print(f"Single thread took {time.time() - time1} seconds")
     print()
     return tracks_df
@@ -156,7 +157,7 @@ if __name__ == "__main__":
     output_dir = join(Path(__file__).parent.parent, "output", experiment)
     input_file = join(Path(__file__).parent.parent, "input", args.file)
 
-    tqdm.pandas()
+
 
 
     if not os.path.exists(join(output_dir, args.config_id, 'tracks_pp.parquet')):
