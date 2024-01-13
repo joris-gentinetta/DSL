@@ -17,7 +17,7 @@ from ultrack.imgproc.segmentation import Cellpose
 from utils import watershed_segm
 print(f"Finished imports in {time.time() - start} seconds")
 
-def segment(folder_path, RESCALE=False):
+def segment(folder_path, ws, RESCALE=False):
     data_dir = Path(folder_path)
     normalized_path = data_dir / "normalized.npy"
     cellpose_path = data_dir / "cellpose_labels.npy"
@@ -43,16 +43,17 @@ def segment(folder_path, RESCALE=False):
         normalize=False,
     )
     np.save(cellpose_path, cellpose_labels)
-    
-    wscp_labels = np.zeros(normalized.shape, dtype=np.uint16)
-    # ws_labels = create_zarr(imgs.shape, np.uint16, ws_path, chunks = chunks)
-    print("Starting watershed...")
-    array_apply(
-        normalized,
-        cellpose_labels,
-        out_array=wscp_labels,
-        func=watershed_segm,
-        min_area=20,
-        axis=(0, 3),
-    )
-    np.save(wscp_path, wscp_labels)
+
+    if ws:
+        wscp_labels = np.zeros(normalized.shape, dtype=np.uint16)
+        # ws_labels = create_zarr(imgs.shape, np.uint16, ws_path, chunks = chunks)
+        print("Starting watershed...")
+        array_apply(
+            normalized,
+            cellpose_labels,
+            out_array=wscp_labels,
+            func=watershed_segm,
+            min_area=20,
+            axis=(0, 3),
+        )
+        np.save(wscp_path, wscp_labels)

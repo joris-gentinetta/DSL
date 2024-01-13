@@ -99,4 +99,4 @@ if __name__ == "__main__":
     start_time = time()
     tracking(output_dir, args.config_id, args.n_frames, args.override)
     end_time = time()
-    print(f"{config_id}: {(end_time - start_time) / 60} minutes")
+    print(f"Tracking took {end_time - start_time} seconds")

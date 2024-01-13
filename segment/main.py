@@ -1,7 +1,7 @@
 import os
 from os.path import join
 import time
-
+import json
 # os.environ["OMP_NUM_THREADS"] = "10"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -16,7 +16,7 @@ from skimage.transform import rescale
 RESCALE = False
 
 
-def segment(data_dir, input_file, n_frames, override=False):
+def segment(data_dir, input_file, n_frames, override=False, config_id=None):
     img_path = input_file
     data_dir = Path(data_dir)
     normalized_path = data_dir / "normalized.npy"
@@ -33,6 +33,10 @@ def segment(data_dir, input_file, n_frames, override=False):
     if n_frames is not None:
         imgs = imgs[:n_frames]
     imgs = np.swapaxes(imgs, 1, 3)
+
+    with open(join(Path(__file__).parent, 'configs', f'{config_id}.json'), 'r') as f:
+        config_data = json.load(f)
+    segmentation_channels = config_data["segmentation_channels"]
 
     if RESCALE:
         ## Downscale images
@@ -54,16 +58,16 @@ def segment(data_dir, input_file, n_frames, override=False):
         preprocess.preprocess(data_dir, imgs, RESCALE=RESCALE)
         print(f'Preprocess: {(time.time() - preprocess_start) / 60} minutes')
 
-    if not cellpose_path.exists() or override:
+    if (not cellpose_path.exists() or override) and ("cellpose" in segmentation_channels or "wscp" in segmentation_channels):
         import cellpose_segment
         cellpose_start = time.time()
-        cellpose_segment.segment(data_dir, RESCALE=RESCALE)
+        cellpose_segment.segment(data_dir, ws=("wscp" in segmentation_channels), RESCALE=RESCALE)
         print(f'Cellpose: {(time.time() - cellpose_start) / 60} minutes')
 
-    if not stardist_path.exists() or override:
+    if not stardist_path.exists() or override and ("stardist" in segmentation_channels or "wssd" in segmentation_channels):
         import stardist_segment
         stardist_start = time.time()
-        stardist_segment.segment(data_dir, RESCALE=RESCALE)
+        stardist_segment.segment(data_dir, ws=("wssd" in segmentation_channels), RESCALE=RESCALE)
         print(f'Stardist: {(time.time() - stardist_start) / 60} minutes')
 
 
@@ -73,6 +77,8 @@ if __name__ == "__main__":
     parser.add_argument('--file', type=str, default="demo.tif", required=False, help='Path to the image file')
     parser.add_argument('--n_frames', type=int, default=None, required=False, help='Number of frames (optional)')
     parser.add_argument('--override', default=True, required=False, action='store_true', help='Override existing files')
+    parser.add_argument('--config_id', type=str, default=None, required=False, help='Name of config file')
+
     args = parser.parse_args()
 
     # create the folder to store the results:
@@ -82,4 +88,4 @@ if __name__ == "__main__":
 
     input_file = join(Path(__file__).parent.parent, "input", args.file)
 
-    segment(output_dir, input_file, args.n_frames, args.override)
+    segment(output_dir, input_file, args.n_frames, args.override, args.config_id)
