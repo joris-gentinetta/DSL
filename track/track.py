@@ -28,12 +28,20 @@ def tracking(output_dir, config_id,  n_frames=-1, override=False):
 
     if 'cellpose' in segmentation_channels:
         cellpose_labels = da.from_array(np.load(cellpose_path))[:n_frames]
+    else:
+        segmentation_channels['cellpose'] = []
     if 'wscp' in segmentation_channels:
         wscp_labels = da.from_array(np.load(wscp_path))[:n_frames]
+    else:
+        segmentation_channels['wscp'] = []
     if 'stardist' in segmentation_channels:
         stardist_labels = da.from_array(np.load(stardist_path))[:n_frames]
+    else:
+        segmentation_channels['stardist'] = []
     if 'wssd' in segmentation_channels:
         wssd_labels = da.from_array(np.load(wssd_path))[:n_frames]
+    else:
+        segmentation_channels['wssd'] = []
 
 
     if not detection_path.exists() or override:
