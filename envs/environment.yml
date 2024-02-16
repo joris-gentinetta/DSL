@@ -6,13 +6,15 @@ channels:
   - gurobi
 dependencies:
   - python=3.10
-  - rapidsai::cucim
+##### packages for CUDA enabled GPU #####
+#  - rapidsai::cucim
 #  - conda-forge::cudatoolkit=11.2
 #  - conda-forge::cudnn=8.4.1
 #  - conda-forge::tensorflow-gpu=2.11.0
 #  - conda-forge::cupy
+#  - coin-or-cbc
+##########################################
   - tensorflow
-  - coin-or-cbc
   - gurobi
   - jupyter
   - pytorch
