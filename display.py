@@ -153,9 +153,6 @@ if __name__ == "__main__":
 
     experiment = Path(args.file).stem
     output_dir = join(Path(__file__).parent, "output", experiment)
-    print(f'rsync -avz --progress jorisg@192.168.1.201:/home/jorisg/projects/DSL/output/ "{join(Path(__file__).parent, "output")}/"')
-    os.system(
-        f'rsync -avz --progress jorisg@192.168.1.201:/home/jorisg/projects/DSL/output/ {join(Path(__file__).parent, "output")}/')
     input_file = join(Path(__file__).parent, "input", args.file)
 
     display_folder(output_dir, input_file, str(args.config_id), args.n_frames)
