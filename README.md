@@ -65,18 +65,10 @@ cd ..
 
 ## Running the Project
 
-First activate your conda environment:
+#### Activate the conda environment
 ```bash
 conda activate DSL
 ```
-
-### Option 1: Run Everything Together
-Execute the entire pipeline with a single command. Choices for configuration are `very_fast`, `fast`, `high_quality`.
-```bash
-source run_everything.sh demo.tif very_fast
-```
-
-### Option 2: Run Each Step Separately
 
 #### Run the Segmentation Script
 ```bash
