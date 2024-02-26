@@ -65,6 +65,11 @@ cd ..
 
 ## Running the Project
 
+First activate your conda environment:
+```bash
+conda activate DSL
+```
+
 ### Option 1: Run Everything Together
 Execute the entire pipeline with a single command. Choices for configuration are `very_fast`, `fast`, `high_quality`.
 ```bash
